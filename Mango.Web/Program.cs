@@ -15,12 +15,16 @@ builder.Services.AddHttpClient();
 
 SD.CouponAPIBase = builder.Configuration["ServiceUrls:CouponAPI"]; // Lo lee del json appsettings
 SD.AuthAPIBase = builder.Configuration["ServiceUrls:AuthAPI"];
+SD.ProductAPIBase = builder.Configuration["ServiceUrls:ProductApi"];
+
 
 
 builder.Services.AddScoped<IBaseService, BaseService>();
 builder.Services.AddScoped<ICouponService, CouponService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<ITokenProvider, TokenProvider>();
+builder.Services.AddScoped<IProductService, ProductService>();
+
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(options =>
     {

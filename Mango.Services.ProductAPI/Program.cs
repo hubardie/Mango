@@ -1,7 +1,7 @@
 using AutoMapper;
-using Mango.Services.CouponAPI;
-using Mango.Services.CouponAPI.Data;
-using Mango.Services.CouponAPI.Extensions;
+using Mango.Services.ProductAPI;
+using Mango.Services.ProductAPI.Data;
+using Mango.Services.ProductAPI.Extensions;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
@@ -48,8 +48,8 @@ builder.Services.AddSwaggerGen(option =>
     });
 });
 
-    builder.AddAppAuthentication();
-    builder.Services.AddAuthorization();
+builder.AddAppAuthentication();
+builder.Services.AddAuthorization();
 
 var app = builder.Build();
 
@@ -58,7 +58,7 @@ if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
-  
+
 }
 
 app.UseHttpsRedirection();
@@ -75,10 +75,10 @@ app.Run();
 
 void ApplyMigration()
 {
-    using (var scope = app.Services.CreateScope()) 
+    using (var scope = app.Services.CreateScope())
     {
-        var _db = scope.ServiceProvider.GetRequiredService < AppDbContext>();
-        if (_db.Database.GetPendingMigrations().Count()>0)
+        var _db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+        if (_db.Database.GetPendingMigrations().Count() > 0)
         {
             _db.Database.Migrate();
         }
