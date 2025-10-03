@@ -10,7 +10,7 @@ namespace Mango.Services.CouponAPI.Controllers
     //[Route("api/[controller]")]
     [Route("api/coupon")]
     [ApiController]
-    [Authorize]
+    //[Authorize] lo comento en la lección 92 para consumir desde ShoppingCartAPI
     public class CouponAPIController : ControllerBase
     {
         private readonly AppDbContext _db;
