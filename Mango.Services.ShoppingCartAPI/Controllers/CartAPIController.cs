@@ -2,7 +2,6 @@
 using Mango.Services.ShoppingCartAPI.Data;
 using Mango.Services.ShoppingCartAPI.Models;
 using Mango.Services.ShoppingCartAPI.Models.Dto;
-using Mango.Services.ShoppingCartAPI.Service.Iservice;
 using Mango.Services.ShoppingCartAPI.Service.IService;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -87,7 +86,7 @@ namespace Mango.Services.ShoppingCartAPI.Controllers
 
         }
 
-        [HttpPost("¨RemoveCoupon")]
+        [HttpPost("RemoveCoupon")]
         public async Task<ResponseDto> RemoveCoupon([FromBody] CartDto cartDto)
         {
 
@@ -109,8 +108,8 @@ namespace Mango.Services.ShoppingCartAPI.Controllers
 
         }
 
-        [HttpPost("CartUpsert")]
-        public async Task<ResponseDto> CartUpsert(CartDto cartDto) 
+        [HttpPost("UpsertCart")]
+        public async Task<ResponseDto> UpsertCart([FromBody] CartDto cartDto) 
         {
             // Three possible actions: 
             // 1. Create a new cart
