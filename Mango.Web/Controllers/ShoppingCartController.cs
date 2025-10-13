@@ -2,6 +2,8 @@
 using Mango.Web.Service.IService;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Formatters;
+using Newtonsoft.Json;
 using System.Collections.Immutable;
 using System.IdentityModel.Tokens.Jwt;
 
@@ -10,16 +12,43 @@ namespace Mango.Web.Controllers
     public class ShoppingCartController : Controller
     {
         private readonly IShoppingCartService _shoppingCartService;
-        public ShoppingCartController(IShoppingCartService shoppingCartService)
+        private readonly IOrderService _orderService;
+
+        public ShoppingCartController(IShoppingCartService shoppingCartService, IOrderService orderService)
         {
             _shoppingCartService = shoppingCartService;
+            _orderService = orderService;
         }
         [Authorize]
         public async Task<IActionResult> ShoppingCartIndex()
         {
             return View(await LoadCartDtoBasedOnLoggedInUser());
         }
+        [Authorize]
+        public async Task<IActionResult> CheckOut()
+        {
+            return View(await LoadCartDtoBasedOnLoggedInUser());
+        }
+        [HttpPost]
+        [ActionName("CheckOut")]
+        public async Task<IActionResult> CheckOut(CartDto cartDto)
+        {
+            CartDto cart = await LoadCartDtoBasedOnLoggedInUser();
+            cart.CartHeader.Name = cartDto.CartHeader.Name;
+            cart.CartHeader.Email = cartDto.CartHeader.Email;
+            cart.CartHeader.Phone = cartDto.CartHeader.Phone;
 
+            var response = await _orderService.CreateOrderAsync(cart);
+            OrderHeaderDto orderHeaderDto = JsonConvert.DeserializeObject<OrderHeaderDto>(Convert.ToString(response.Result));
+
+            if (response != null && response.IsSuccess)
+            {
+                // get stripe session and redirect to stripe to place order
+                // de stripe necesitaremos: Session Id, URL, Back/Cancel URL y Approved URL (cuando se haya procesado el pago ok)
+                cartDto = Newtonsoft.Json.JsonConvert.DeserializeObject<CartDto>(Convert.ToString(response.Result));
+            }
+            return View();
+        }
         public async Task<IActionResult> Remove(int cartDetailsId)
         {
             var userId = User.Claims.Where(u => u.Type == JwtRegisteredClaimNames.Sub)?.FirstOrDefault()?.Value;
@@ -72,7 +101,7 @@ namespace Mango.Web.Controllers
         public async Task<IActionResult> EmailCart(CartDto carDto)
         {
             CartDto cart = await LoadCartDtoBasedOnLoggedInUser();
-           cart.CartHeader.Email = User.Claims.Where(u => u.Type == JwtRegisteredClaimNames.Email)?.FirstOrDefault()?.Value;
+            cart.CartHeader.Email = User.Claims.Where(u => u.Type == JwtRegisteredClaimNames.Email)?.FirstOrDefault()?.Value;
 
             ResponseDto response = await _shoppingCartService.EmailCart(cart);
             if (response != null && response.IsSuccess)
@@ -96,6 +125,8 @@ namespace Mango.Web.Controllers
                 cartDto = Newtonsoft.Json.JsonConvert.DeserializeObject<CartDto>(Convert.ToString(response.Result));
             }
             return cartDto;
-        }
+        }        
     }
+
+
 }
