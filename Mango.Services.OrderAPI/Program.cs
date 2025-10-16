@@ -78,8 +78,10 @@ if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
-
 }
+// Se obtiene de  https://dashboard.stripe.com/acct_1SI436CzsfCd97BG/test/apikeys (developers - Api keys - Secret key)
+Stripe.StripeConfiguration.ApiKey = builder.Configuration.GetSection("Stripe:SecretKey").Get<string>();
+
 
 app.UseHttpsRedirection();
 
